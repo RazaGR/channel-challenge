@@ -95,7 +95,7 @@ func (r *repo) start(w *websocket.Conn) {
 				// the existSymbol slice and also perform the add operation
 				if !found {
 					existSymbol = append(existSymbol, curr.Symbol)
-					err := r.CurrencyServices[curr.Symbol].AddToChannel(curr)
+					err := r.AddToChannel(curr)
 					if err != nil {
 						panic(err)
 					}
@@ -105,6 +105,19 @@ func (r *repo) start(w *websocket.Conn) {
 		}
 	}
 
+}
+
+// AddToChannel sends the currency data to the service channel
+//  @receiver r
+//  @param currency
+//  @return error
+func (r *repo) AddToChannel(currency domain.Currency) error {
+
+	err := r.CurrencyServices[currency.Symbol].AddToChannel(currency)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // found is a helper function to check if the symbol already exist in the map

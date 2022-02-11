@@ -19,4 +19,5 @@ type CurrencyRepository interface {
 // WebSocketRepository is used to assign rules to a websocket
 type WebSocketRepository interface {
 	Run() error
+	AddToChannel(currency domain.Currency) error
 }
