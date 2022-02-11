@@ -19,6 +19,7 @@ var (
 )
 
 func main() {
+	//Let's load the .env file, you must need to have this file in the root of the project
 	godotenv.Load()
 	// Get the environment variables
 	if windowEnv := os.Getenv("WINDOWSIZE"); windowEnv != "" {
