@@ -32,7 +32,8 @@ docker run -e  WINDOWSIZE="CHANGE" -e FINNHUBAPIKEY="CHANGE" -e CURRENCY="CHANGE
 
 ### Run without Docker
 
-if you need to run this without docker, you have to update main.go file, just remove the global variables and update variables with default values.
+if you need to run this without docker, you have to update main.go file, you have to add all your global variables in
+`.env` file in project root directory
 
 ## Project Structure
 

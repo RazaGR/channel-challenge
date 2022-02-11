@@ -3,8 +3,17 @@ package service
 import (
 	"fmt"
 	"math"
+	"sync"
 
 	"github.com/razagr/pensionera/domain"
+)
+
+// var
+//  @param wg
+//  @param ch
+var (
+	wg sync.WaitGroup
+	ch = make(chan domain.Currency)
 )
 
 // service
@@ -67,6 +76,30 @@ func (s *service) GetAverage() float64 {
 		sum += price
 	}
 	return sum / float64(s.window)
+}
+
+// add retrived currency detail from websocket to the map using go channel
+//  @receiver r
+//  @param currency
+//  @return error
+func (s *service) StartChannel(currency domain.Currency) error {
+	go func(c <-chan domain.Currency) {
+		defer wg.Done()
+
+		// loop through channel until the channel is closed
+		for cur := range c {
+			// when channel sends a value then send it to the service for processing
+			err := s.AddPrice(cur)
+			if err != nil {
+				defer wg.Done()
+				panic(err)
+			}
+		}
+		fmt.Println("Channel closed....")
+	}(ch)
+	ch <- currency
+	wg.Wait()
+	return nil
 }
 
 // This helps to initialze prices slice with 0 values

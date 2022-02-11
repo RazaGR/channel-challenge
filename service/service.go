@@ -8,11 +8,12 @@ import (
 type CurrencyService interface {
 	GetAverage() float64
 	AddPrice(currency domain.Currency) error
+	StartChannel(currency domain.Currency) error
 }
 
 // CurrencyRepository is used to save currency data to a database
 type CurrencyRepository interface {
-	Add(currency *domain.Currency) error
+	Save(currency *domain.Currency) error
 }
 
 // WebSocketRepository is used to assign rules to a websocket

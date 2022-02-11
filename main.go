@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/joho/godotenv"
 	"github.com/razagr/pensionera/repository"
 	"github.com/razagr/pensionera/service"
 )
@@ -18,7 +19,7 @@ var (
 )
 
 func main() {
-
+	godotenv.Load()
 	// Get the environment variables
 	if windowEnv := os.Getenv("WINDOWSIZE"); windowEnv != "" {
 		var err error

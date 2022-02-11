@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/gorilla/websocket"
-	"github.com/razagr/pensionera/domain"
 	"github.com/razagr/pensionera/service"
 )
 
@@ -117,39 +116,6 @@ func Test_repo_start(t *testing.T) {
 				APIKey:           tt.fields.APIKey,
 			}
 			r.start(tt.args.w)
-		})
-	}
-}
-
-func Test_repo_add(t *testing.T) {
-	type fields struct {
-		window           int
-		symbols          map[string]float32
-		CurrencyServices map[string]service.CurrencyService
-		APIKey           string
-	}
-	type args struct {
-		currency domain.Currency
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			r := &repo{
-				window:           tt.fields.window,
-				symbols:          tt.fields.symbols,
-				CurrencyServices: tt.fields.CurrencyServices,
-				APIKey:           tt.fields.APIKey,
-			}
-			if err := r.add(tt.args.currency); (err != nil) != tt.wantErr {
-				t.Errorf("repo.add() error = %v, wantErr %v", err, tt.wantErr)
-			}
 		})
 	}
 }

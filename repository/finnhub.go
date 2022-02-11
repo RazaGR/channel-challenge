@@ -2,20 +2,10 @@ package repository
 
 import (
 	"encoding/json"
-	"fmt"
-	"sync"
 
 	"github.com/gorilla/websocket"
 	"github.com/razagr/pensionera/domain"
 	"github.com/razagr/pensionera/service"
-)
-
-// var
-//  @param wg
-//  @param ch
-var (
-	wg sync.WaitGroup
-	ch = make(chan domain.Currency)
 )
 
 // CurrencyJSON is a helper struct to unmarshal the websocket JSON response
@@ -85,7 +75,7 @@ func (r *repo) start(w *websocket.Conn) {
 		var respone CurrencyJSON
 		err := w.ReadJSON(&respone)
 		if err != nil {
-			defer wg.Done()
+			// defer wg.Done()
 			panic(err)
 		}
 		if respone.Type == "trade" {
@@ -96,16 +86,16 @@ func (r *repo) start(w *websocket.Conn) {
 			// existSymbol helps to avoid duplicate entries in the response
 			existSymbol := []string{}
 
-			for _, element := range respone.Data {
+			for _, curr := range respone.Data {
 
 				// check if the symbol already exist in the existSymbol slice
-				found, _ := r.found(element.Symbol, existSymbol)
+				found, _ := r.found(curr.Symbol, existSymbol)
 
 				// if the symbol does not exist in the slice then add it to
 				// the existSymbol slice and also perform the add operation
 				if !found {
-					existSymbol = append(existSymbol, element.Symbol)
-					err := r.add(element)
+					existSymbol = append(existSymbol, curr.Symbol)
+					err := r.CurrencyServices[curr.Symbol].StartChannel(curr)
 					if err != nil {
 						panic(err)
 					}
@@ -117,31 +107,7 @@ func (r *repo) start(w *websocket.Conn) {
 
 }
 
-// add retrived currency detail from websocket to the map using go channel
-//  @receiver r
-//  @param currency
-//  @return error
-func (r *repo) add(currency domain.Currency) error {
-	go func(c <-chan domain.Currency) {
-		defer wg.Done()
-
-		// loop through channel until the channel is closed
-		for cur := range c {
-			// when channel sends a value then send it to the service for processing
-			err := r.CurrencyServices[cur.Symbol].AddPrice(cur)
-			if err != nil {
-				defer wg.Done()
-				panic(err)
-			}
-		}
-		fmt.Println("Channel closed....")
-	}(ch)
-	ch <- currency
-	wg.Wait()
-	return nil
-}
-
-// found is a helper function to check if the symbol is already exist in the map
+// found is a helper function to check if the symbol already exist in the map
 // this is required to avoid duplicate entries I was receivng in the websocket JSON response
 //  @receiver r
 //  @param val
