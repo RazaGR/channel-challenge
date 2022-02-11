@@ -46,6 +46,7 @@ if you need to run this without docker, you have to update main.go file, you hav
 ├── go.sum
 ├── main.go    # main, also setup envoirnment vars
 ├── main_test.go
+├── .env       # global varialble here
 ├── repository # hold  websocket,database logic
 │   ├── finnhub.go # adapter for finnhub API
 │   └── finnhub_test.go
