@@ -32,7 +32,7 @@ docker run -e  WINDOWSIZE="CHANGE" -e FINNHUBAPIKEY="CHANGE" -e CURRENCY="CHANGE
 
 ### Database
 
-This will currently store a database.csv file in root diretory, but I can add easily any other adpatar such as MySQL, PostgreSQL, MongoDB etc
+This will currently store a database.csv file in root diretory, but I can add easily any other adpatar such as MySQL, PostgreSQL, MongoDB, FireStore etc
 
 ### Run without Docker
 
