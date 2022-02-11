@@ -95,7 +95,7 @@ func (r *repo) start(w *websocket.Conn) {
 				// the existSymbol slice and also perform the add operation
 				if !found {
 					existSymbol = append(existSymbol, curr.Symbol)
-					err := r.CurrencyServices[curr.Symbol].StartChannel(curr)
+					err := r.CurrencyServices[curr.Symbol].AddToChannel(curr)
 					if err != nil {
 						panic(err)
 					}

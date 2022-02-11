@@ -8,7 +8,7 @@ import (
 type CurrencyService interface {
 	GetAverage() float64
 	AddPrice(currency domain.Currency) error
-	StartChannel(currency domain.Currency) error
+	AddToChannel(currency domain.Currency) error
 }
 
 // CurrencyRepository is used to save currency data to a database

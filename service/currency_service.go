@@ -82,7 +82,7 @@ func (s *service) GetAverage() float64 {
 //  @receiver r
 //  @param currency
 //  @return error
-func (s *service) StartChannel(currency domain.Currency) error {
+func (s *service) AddToChannel(currency domain.Currency) error {
 	go func(c <-chan domain.Currency) {
 		defer wg.Done()
 
