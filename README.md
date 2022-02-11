@@ -11,9 +11,9 @@ This demo follows Domain driven design approach by laverging [Hexagonal Architec
 To run in docker you can build your own image or use docker image provided below, you must need to provide these envoirnment variables:
 
 ```
-WINDOWSIZE="10"
-FINNHUBAPIKEY="YOUR_KEY"
-CURRENCY="BINANCE:BTCUSDT"
+WINDOWSIZE=10
+FINNHUBAPIKEY=YOUR_KEY
+CURRENCY=BINANCE:BTCUSDT
 ```
 
 Replace `YOUR_KEY` with your Finnhub API key.
