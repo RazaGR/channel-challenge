@@ -11,13 +11,11 @@ import (
 )
 
 // var
-//  @param someMapMutex
 //  @param wg
 //  @param ch
 var (
-	someMapMutex = sync.RWMutex{}
-	wg           sync.WaitGroup
-	ch           = make(chan domain.Currency)
+	wg sync.WaitGroup
+	ch = make(chan domain.Currency)
 )
 
 // CurrencyJSON is a helper struct to unmarshal the websocket JSON response

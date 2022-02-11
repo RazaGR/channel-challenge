@@ -39,7 +39,7 @@ if you need to run this without docker, you have to update main.go file, just re
 ```
 ├── Dockerfile #to build docker image
 ├── README.md
-├── domain     #contains domain login
+├── domain     #contains domain logic
 │   └── domain.go  #dto
 ├── go.mod
 ├── go.sum
@@ -48,7 +48,7 @@ if you need to run this without docker, you have to update main.go file, just re
 ├── repository # hold  websocket,database logic
 │   ├── finnhub.go # adapter for finnhub API
 │   └── finnhub_test.go
-└── service   # all our portslogic
+└── service   # all our ports logic
     ├── currency_service.go # currency service
     ├── currency_service_test.go
     └── service.go #interfaces
