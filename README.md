@@ -11,7 +11,7 @@ This demo follows Domain driven design approach by laverging [Hexagonal Architec
 To run in docker you can build your own image or use docker image provided below, you must need to provide these envoirnment variables:
 
 ```
-WINDOWSIZE=10
+WINDOWSIZE=60
 FINNHUBAPIKEY=YOUR_KEY
 CURRENCY=BINANCE:BTCUSDT
 ```
@@ -21,7 +21,7 @@ Replace `YOUR_KEY` with your Finnhub API key.
 You can add multiple currencies in `CURRENCY` variable, seperated by comma
 
 ```
-CURRENCY="BINANCE:BTCUSDT,BINANCE:ETHUSDT"
+CURRENCY=BINANCE:BTCUSDT,BINANCE:ETHUSDT
 ```
 
 When ready, Run this image: ( Dont forget to chage : CHANGE, with your details)
@@ -29,6 +29,10 @@ When ready, Run this image: ( Dont forget to chage : CHANGE, with your details)
 ```
 docker run -e  WINDOWSIZE="CHANGE" -e FINNHUBAPIKEY="CHANGE" -e CURRENCY="CHANGE" razalabs/pensionera
 ```
+
+### Database
+
+This will currently store a database.csv file in root diretory, but I can add easily any other adpatar such as MySQL, PostgreSQL, MongoDB etc
 
 ### Run without Docker
 
@@ -40,6 +44,7 @@ if you need to run this without docker, you have to add all your global variable
 ```
 ├── Dockerfile #to build docker image
 ├── README.md
+├── database.csv  #This file will stores the price data
 ├── domain     #contains domain logic
 │   └── domain.go  #dto
 ├── go.mod
@@ -48,6 +53,8 @@ if you need to run this without docker, you have to add all your global variable
 ├── main_test.go
 ├── .env       # global varialble here
 ├── repository # hold  websocket,database logic
+│   ├── file_storage.go # to store average result
+│   ├── file_storage_test.go
 │   ├── finnhub.go # adapter for finnhub API
 │   └── finnhub_test.go
 └── service   # all our ports logic
@@ -60,7 +67,7 @@ if you need to run this without docker, you have to add all your global variable
 
 - [x] Implement logic
 - [x] Multiple currencies support
-- [ ] Add Database logic
+- [x] Add Database logic
 - [x] Split from Flat to [hexagonal architecture software](https://en.wikipedia.org/wiki/Hexagonal_architecture_%28software%29) design
 - [x] Dockerize
 - [ ] Error Handling

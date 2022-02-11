@@ -22,16 +22,17 @@ type service struct {
 	window          int
 	prices          []float64
 	priceSliceIndex int
+	storage         CurrencyRepository
 }
 
 // Create new service of type CurrencyService
 //  @param window
 //  @param currency
 //  @return CurrencyService
-func NewService(window int, currency string) CurrencyService {
+func NewService(window int, currency string, storage CurrencyRepository) CurrencyService {
 	prices := initPrices(window)
 	priceSliceIndex := 0
-	return &service{currency, window, prices, priceSliceIndex}
+	return &service{currency, window, prices, priceSliceIndex, storage}
 }
 
 // AddPrice update prices slice with the new price
@@ -57,11 +58,12 @@ func (s *service) AddPrice(currency domain.Currency) error {
 		// reset the prices slice values to 0
 		s.prices = initPrices(s.window)
 		fmt.Printf("-> Currency: %s: Window: %d:  Timestamp: %d: Average: %v\n", s.currency, s.window, currency.Time, avg)
+		s.storage.Save(&currency, avg)
 	} else {
-
 		// increase the index of the slice
 		s.priceSliceIndex++
 	}
+	// fmt.Println(s.priceSliceIndex)
 	return nil
 }
 

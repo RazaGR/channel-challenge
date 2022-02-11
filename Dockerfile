@@ -17,7 +17,7 @@ RUN CGO_ENABLED=0 go test -v
 # Build 
 RUN go build -o ./out/pensionera-app .
 
-# We need maller image
+# We need smaller image
 FROM alpine:3.15 
 RUN apk add ca-certificates
 
