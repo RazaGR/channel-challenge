@@ -16,8 +16,7 @@ type CurrencyRepository interface {
 	Save(currency domain.Currency, avg float64) error
 }
 
-// WebSocketRepository is used to assign rules to a websocket
-type WebSocketRepository interface {
+// DataProviderRepository for price providing services
+type PriceProviderRepository interface {
 	Run() error
-	AddToChannel(currency domain.Currency) error
 }

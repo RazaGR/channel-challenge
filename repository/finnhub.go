@@ -36,7 +36,7 @@ func NewFinnHubRepository(
 	window int,
 	symbols map[string]float32,
 	CurrencyServices map[string]service.CurrencyService,
-	APIKey string) service.WebSocketRepository {
+	APIKey string) service.PriceProviderRepository {
 	return &repo{window, symbols, CurrencyServices, APIKey}
 }
 
@@ -73,10 +73,8 @@ func (r *repo) start(w *websocket.Conn) {
 
 		// respone will save the websocket JSON response
 		var respone CurrencyJSON
-		// TODO: Talk this issue with the author for emptying buffer from ReadJSON
 		err := w.ReadJSON(&respone)
 		if err != nil {
-			// defer wg.Done()
 			panic(err)
 		}
 		if respone.Type == "trade" {
@@ -97,7 +95,7 @@ func (r *repo) start(w *websocket.Conn) {
 				if !found {
 					existSymbol = append(existSymbol, curr.Symbol)
 					go func() {
-						err := r.AddToChannel(curr)
+						err := r.CurrencyServices[curr.Symbol].AddToChannel(curr)
 						if err != nil {
 							panic(err)
 						}
@@ -108,19 +106,6 @@ func (r *repo) start(w *websocket.Conn) {
 		}
 	}
 
-}
-
-// AddToChannel sends the currency data to the
-//  @receiver r
-//  @param currency
-//  @return error
-func (r *repo) AddToChannel(currency domain.Currency) error {
-
-	err := r.CurrencyServices[currency.Symbol].AddToChannel(currency)
-	if err != nil {
-		return err
-	}
-	return nil
 }
 
 // found is a helper function to check if the symbol already exist in the map

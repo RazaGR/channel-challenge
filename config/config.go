@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -56,6 +57,12 @@ func NewConfig() Config {
 }
 
 func (c *config) Configuration() (int, map[string]float32, string) {
+
+	// check if all configuration is correct
+	fmt.Printf("Setup is done, You will see result after %d window size \n", window)
+	fmt.Println("Window size:", window)
+	fmt.Println("Currency: ", symbols)
+	fmt.Println("FinnHub API Key:", FinnHubAPIKey)
 
 	return window, symbols, FinnHubAPIKey
 }
