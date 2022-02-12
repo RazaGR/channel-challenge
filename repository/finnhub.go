@@ -73,6 +73,7 @@ func (r *repo) start(w *websocket.Conn) {
 
 		// respone will save the websocket JSON response
 		var respone CurrencyJSON
+		// TODO: Talk this issue with the author for emptying buffer from ReadJSON
 		err := w.ReadJSON(&respone)
 		if err != nil {
 			// defer wg.Done()
@@ -95,10 +96,12 @@ func (r *repo) start(w *websocket.Conn) {
 				// the existSymbol slice and also perform the add operation
 				if !found {
 					existSymbol = append(existSymbol, curr.Symbol)
-					err := r.AddToChannel(curr)
-					if err != nil {
-						panic(err)
-					}
+					go func() {
+						err := r.AddToChannel(curr)
+						if err != nil {
+							panic(err)
+						}
+					}()
 				}
 			}
 

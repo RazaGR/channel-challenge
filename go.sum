@@ -1,3 +1,6 @@
+github.com/bcicen/termui v0.0.0-20180326052246-4eb80249d3f5 h1:2pI3ZsoefWIi++8EqmANoC7Px/v2lRwnleVUcCuFgLg=
+github.com/bcicen/termui v0.0.0-20180326052246-4eb80249d3f5/go.mod h1:yIA9ITWZD1p4/DvCQ44xvhyVb9XEUlVnY1rzGSHwbiM=
+github.com/google/go-cmp v0.5.1/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
 github.com/gorilla/websocket v1.4.2 h1:+/TMaTYc4QFitKJxsQ7Yye35DkWvkdLcvGKqM+x0Ufc=
 github.com/gorilla/websocket v1.4.2/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
 github.com/joho/godotenv v1.4.0 h1:3l4+N6zfMWnkbPEXKng2o2/MR5mSwTrBih4ZEkkz1lg=

@@ -13,7 +13,7 @@ type CurrencyService interface {
 
 // CurrencyRepository is used to save currency data to a database
 type CurrencyRepository interface {
-	Save(currency *domain.Currency, avg float64) error
+	Save(currency domain.Currency, avg float64) error
 }
 
 // WebSocketRepository is used to assign rules to a websocket

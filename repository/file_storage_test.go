@@ -26,7 +26,7 @@ func TestNewFileStorage(t *testing.T) {
 
 func Test_fileStroageRepository_Save(t *testing.T) {
 	type args struct {
-		currency *domain.Currency
+		currency domain.Currency
 		avg      float64
 	}
 	tests := []struct {

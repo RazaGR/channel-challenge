@@ -15,7 +15,7 @@ type fileStroageRepository struct {
 func NewFileStorage() service.CurrencyRepository {
 	return &fileStroageRepository{}
 }
-func (r *fileStroageRepository) Save(currency *domain.Currency, avg float64) error {
+func (r *fileStroageRepository) Save(currency domain.Currency, avg float64) error {
 	csvfile, err := os.OpenFile("database.csv", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		fmt.Println("Error:", err)

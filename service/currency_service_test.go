@@ -33,7 +33,7 @@ func Test_service_AddPrice(t *testing.T) {
 	type fields struct {
 		currency        string
 		window          int
-		prices          []float64
+		prices          []*float64
 		priceSliceIndex int
 		storage         CurrencyRepository
 	}
@@ -68,7 +68,7 @@ func Test_service_GetAverage(t *testing.T) {
 	type fields struct {
 		currency        string
 		window          int
-		prices          []float64
+		prices          []*float64
 		priceSliceIndex int
 		storage         CurrencyRepository
 	}
@@ -99,7 +99,7 @@ func Test_service_AddToChannel(t *testing.T) {
 	type fields struct {
 		currency        string
 		window          int
-		prices          []float64
+		prices          []*float64
 		priceSliceIndex int
 		storage         CurrencyRepository
 	}

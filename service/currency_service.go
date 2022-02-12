@@ -19,7 +19,7 @@ var (
 type service struct {
 	currency        string
 	window          int
-	prices          []float64
+	prices          []*float64
 	priceSliceIndex int
 	storage         CurrencyRepository
 }
@@ -29,7 +29,7 @@ type service struct {
 //  @param currency
 //  @return CurrencyService
 func NewService(window int, currency string, storage CurrencyRepository) CurrencyService {
-	prices := make([]float64, window)
+	prices := make([]*float64, window)
 	priceSliceIndex := 0
 	return &service{currency, window, prices, priceSliceIndex, storage}
 }
@@ -45,7 +45,7 @@ func (s *service) AddPrice(currency domain.Currency) error {
 	}
 
 	// add the new price to the prices slice
-	s.prices[s.priceSliceIndex] = currency.Price
+	s.prices[s.priceSliceIndex] = &currency.Price
 
 	// our slice is full, lets calculate the moving average and reset the slice
 	// we have to subtract 1 from the window because we are using a circular buffer
@@ -55,9 +55,11 @@ func (s *service) AddPrice(currency domain.Currency) error {
 		// reset the slice index
 		s.priceSliceIndex = 0
 		// reset the prices slice values to 0
-		s.prices = make([]float64, s.window)
-		fmt.Printf("-> Currency: %s: Window: %d:  Timestamp: %d: Average: %v\n", s.currency, s.window, currency.Time, avg)
-		s.storage.Save(&currency, avg)
+		s.prices = make([]*float64, s.window)
+		go func() {
+			fmt.Printf("-> Currency: %s: Window: %d:  Timestamp: %d: Average: %v\n", s.currency, s.window, currency.Time, avg)
+			s.storage.Save(currency, avg)
+		}()
 	} else {
 		// increase the index of the slice
 		s.priceSliceIndex++
@@ -74,7 +76,7 @@ func (s *service) GetAverage() float64 {
 
 	// count the sum of the prices slice
 	for _, price := range s.prices {
-		sum += price
+		sum += *price
 	}
 	return sum / float64(s.window)
 }
@@ -86,7 +88,7 @@ func (s *service) GetAverage() float64 {
 func (s *service) AddToChannel(currency domain.Currency) error {
 	// check if the channel is open for this currency
 	if channelOpened[currency.Symbol] == false {
-		channels[currency.Symbol] = make(chan domain.Currency)
+		channels[currency.Symbol] = make(chan domain.Currency, 1)
 		channelOpened[currency.Symbol] = true
 		fmt.Println("Channel opened for: ", currency.Symbol)
 		go func(c <-chan domain.Currency) {
