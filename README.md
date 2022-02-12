@@ -44,6 +44,8 @@ if you need to run this without docker, you have to add all your global variable
 ```
 ├── Dockerfile #to build docker image
 ├── README.md
+├── config # envoirnment vars configuration
+│   └── config.go
 ├── database.csv  #This file will stores the price data
 ├── domain     #contains domain logic
 │   └── domain.go  #dto
