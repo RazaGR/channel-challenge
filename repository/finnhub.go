@@ -1,3 +1,5 @@
+//Finnhub adapatar implements PriceProviderRepository interface
+// it is a source adapter for the Finnhub Websocket API
 package repository
 
 import (
@@ -8,31 +10,31 @@ import (
 	"github.com/razagr/pensionera/service"
 )
 
-// CurrencyJSON is a helper struct to unmarshal the websocket JSON response
+// CurrencyJSON saves slice of Currency and its type
 type CurrencyJSON struct {
 	Data []domain.Currency `json:"data"`
 	Type string            `json:"type"`
 }
 
-// repo
-//  @param window
-//  @param symbols
-//  @param CurrencyServices
-//  @param APIKey
+// repo implements the PriceProviderRepository interface
 type repo struct {
-	window           int
-	symbols          map[string]float32
+
+	// window size
+	window int
+
+	// currency symbols
+	symbols map[string]float32
+
+	// CurrencyServices map for each currency symbol
 	CurrencyServices map[string]service.CurrencyService
-	APIKey           string
+
+	// APIKey is used to authenticate the websocket connection
+	APIKey string
 }
 
-// Create a new repository
-//  @param window
-//  @param symbols
-//  @param CurrencyServices
-//  @param APIKey
-//  @return service.WebSocketRepository
+// NewFinnHubRepository is a constructor for the Finnhub adapter
 func NewFinnHubRepository(
+
 	window int,
 	symbols map[string]float32,
 	CurrencyServices map[string]service.CurrencyService,
@@ -40,9 +42,7 @@ func NewFinnHubRepository(
 	return &repo{window, symbols, CurrencyServices, APIKey}
 }
 
-// Run socket services
-//  @receiver r
-//  @return error
+// Run starts the websocket connection and calls the subscribe and start functions
 func (r *repo) Run() error {
 	w, _, err := websocket.DefaultDialer.Dial("wss://ws.finnhub.io?token="+r.APIKey, nil)
 	if err != nil {
@@ -50,14 +50,15 @@ func (r *repo) Run() error {
 	}
 	defer w.Close()
 
+	// subscribe to the websocket
 	r.subscribe(w)
-	r.start(w)
+
+	// start listening to the websocket
+	r.startListening(w)
 	return nil
 }
 
-// subscribe to the websocket topics
-//  @receiver r
-//  @param w
+// subscribe to the websocket
 func (r *repo) subscribe(w *websocket.Conn) {
 	for s := range r.symbols {
 		msgReceived, _ := json.Marshal(map[string]interface{}{"type": "subscribe", "symbol": s})
@@ -65,13 +66,11 @@ func (r *repo) subscribe(w *websocket.Conn) {
 	}
 }
 
-// start fetching data from websocket using  interval set in the r.window varilable
-//  @receiver r
-//  @param w
-func (r *repo) start(w *websocket.Conn) {
+// start listening to the websocket and passes the pricing data to the CurrencyServices
+func (r *repo) startListening(w *websocket.Conn) {
 	for {
 
-		// respone will save the websocket JSON response
+		// respone will save the websocket JSON data
 		var respone CurrencyJSON
 		err := w.ReadJSON(&respone)
 		if err != nil {
@@ -87,14 +86,18 @@ func (r *repo) start(w *websocket.Conn) {
 
 			for _, curr := range respone.Data {
 
-				// check if the symbol already exist in the existSymbol slice
+				// check if symbol already exist in the existSymbol slice
 				found, _ := r.found(curr.Symbol, existSymbol)
 
-				// if the symbol does not exist in the slice then add it to
-				// the existSymbol slice and also perform the add operation
+				// if  symbol does not exist in the slice then add it to
+				//  existSymbol slice and also perform the add operation
 				if !found {
 					existSymbol = append(existSymbol, curr.Symbol)
+
+					// start a new goroutine
 					go func() {
+
+						// send the pricing data to the CurrencyService
 						err := r.CurrencyServices[curr.Symbol].AddToChannel(curr)
 						if err != nil {
 							panic(err)
@@ -108,13 +111,8 @@ func (r *repo) start(w *websocket.Conn) {
 
 }
 
-// found is a helper function to check if the symbol already exist in the map
+// found is a function that checks if the symbol already exist in the slice
 // this is required to avoid duplicate entries I was receivng in the websocket JSON response
-//  @receiver r
-//  @param val
-//  @param array
-//  @return ok
-//  @return i
 func (r *repo) found(val string, array []string) (ok bool, i int) {
 	for i = range array {
 		if ok = array[i] == val; ok {

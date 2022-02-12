@@ -1,3 +1,5 @@
+// CurrencyService is used to get the currency data from adapters (PriceProviderRepository)
+// and save it to the database (CurrencyRepository)
 package service
 
 import (
@@ -7,38 +9,48 @@ import (
 	"github.com/razagr/pensionera/domain"
 )
 
-// var
-//  @param channels
-//  @param channelOpened
 var (
-	channels      = map[string]chan domain.Currency{}
+
+	// channels is a map of channels for each currency
+	// each country has it's own channel
+	channels = map[string]chan domain.Currency{}
+
+	// channelOpened keeps track of which channels are open
 	channelOpened = map[string]bool{}
 )
 
 // service
 type service struct {
-	currency        string
-	window          int
-	prices          []float64
+
+	// currency symbol
+	currency string
+
+	// window size
+	window int
+
+	// prices slice
+	prices []float64
+
+	// priceSliceIndex tracks the index of the slice
 	priceSliceIndex int
-	storage         CurrencyRepository
+
+	// storage is the repository for saving currency data
+	storage CurrencyRepository
 }
 
-// Create new service of type CurrencyService
-//  @param window
-//  @param currency
-//  @return CurrencyService
+// NewService creates a new service for a currency
 func NewService(window int, currency string, storage CurrencyRepository) CurrencyService {
+
+	// initialize the prices slice
 	prices := make([]float64, window)
+
+	// initialize the priceSliceIndex with 0
 	priceSliceIndex := 0
 	return &service{currency, window, prices, priceSliceIndex, storage}
 }
 
-// AddPrice update prices slice with the new price
+// AddPrice adds the price to the prices slice and calls GetAverage()
 // It also resets the priceSliceIndex to 0 if it reaches the window size
-//  @receiver s
-//  @param currency
-//  @return error
 func (s *service) AddPrice(currency domain.Currency) error {
 	if math.IsNaN(currency.Price) && math.IsInf(currency.Price, 0) {
 		return fmt.Errorf("Invalid price: %f", currency.Price)
@@ -52,10 +64,12 @@ func (s *service) AddPrice(currency domain.Currency) error {
 	if s.priceSliceIndex >= (s.window - 1) {
 		avg := s.GetAverage()
 
-		// reset the slice index
+		// reset the slice index for circular buffer
 		s.priceSliceIndex = 0
 		// reset the prices slice values to 0
 		s.prices = make([]float64, s.window)
+
+		// starts a goroutine to save the average to the database
 		go func() {
 			fmt.Printf("-> Currency: %s: Window: %d:  Timestamp: %d: Average: %v\n", s.currency, s.window, currency.Time, avg)
 			s.storage.Save(currency, avg)
@@ -69,8 +83,6 @@ func (s *service) AddPrice(currency domain.Currency) error {
 }
 
 // Returns the average of the prices slice divided by the window size
-//  @receiver s
-//  @return float64
 func (s *service) GetAverage() float64 {
 	var sum float64 = 0
 
@@ -82,15 +94,16 @@ func (s *service) GetAverage() float64 {
 }
 
 // add retrived currency detail from websocket to the map using go channel
-//  @receiver r
-//  @param currency
-//  @return error
 func (s *service) AddToChannel(currency domain.Currency) error {
+
 	// check if the channel is open for this currency
 	if channelOpened[currency.Symbol] == false {
+		// create a new channel for this currency
 		channels[currency.Symbol] = make(chan domain.Currency)
+		// set the channel as open
 		channelOpened[currency.Symbol] = true
 		fmt.Println("Channel opened for: ", currency.Symbol)
+		// start a goroutine to listen to the channel
 		go func(c <-chan domain.Currency) {
 
 			// loop through channel until the channel is closed
@@ -104,6 +117,7 @@ func (s *service) AddToChannel(currency domain.Currency) error {
 			fmt.Println("Channel closed for: ", currency.Symbol)
 		}(channels[currency.Symbol])
 	}
+	// send the currency to the channel
 	channels[currency.Symbol] <- currency
 	return nil
 }
