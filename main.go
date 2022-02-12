@@ -2,63 +2,33 @@ package main
 
 import (
 	"fmt"
-	"os"
-	"strconv"
-	"strings"
 
 	"github.com/joho/godotenv"
+	"github.com/razagr/pensionera/config"
 	"github.com/razagr/pensionera/repository"
 	"github.com/razagr/pensionera/service"
-)
-
-// If you need this to run without docker, you can add the values here
-var (
-	symbols       map[string]float32
-	window        int
-	FinnHubAPIKey string
 )
 
 func main() {
 	//Let's load the .env file, you must need to have this file in the root of the project
 	godotenv.Load()
-	// Get the environment variables
-	if windowEnv := os.Getenv("WINDOWSIZE"); windowEnv != "" {
-		var err error
-		window, err = strconv.Atoi(windowEnv)
-		if err != nil {
-			panic(err)
-		}
-	} else {
-		fmt.Println("You must need to provide a WINDOWSIZE environment variable")
-		os.Exit(1)
-	}
-	if akiKeyEnv := os.Getenv("FINNHUBAPIKEY"); akiKeyEnv != "" {
-		FinnHubAPIKey = akiKeyEnv
-	} else {
-		fmt.Println("You must need to provide a FINNHUBAPIKEY environment variable")
-		os.Exit(1)
-	}
-	if currencyEnv := os.Getenv("CURRENCY"); currencyEnv != "" {
-		symbols = make(map[string]float32)
-		s := strings.Split(currencyEnv, ",")
-		for _, cur := range s {
-			symbols[cur] = 0
-		}
-	} else {
-		fmt.Println("You must need to provide a CURRENCY environment variable")
-		os.Exit(1)
-	}
+	// Configure the environment variables
+	window, symbols, FinnHubAPIKey := config.NewConfig().Configuration()
 
+	// get our storage repository to store the data in CSV format
 	storage := repository.NewFileStorage()
 
+	// check if all configuration is correct
 	fmt.Printf("Setup is done, You will see result after %d window size \n", window)
 	fmt.Println("Window size:", window)
 	fmt.Println("Currency: ", symbols)
 	fmt.Println("FinnHub API Key:", FinnHubAPIKey)
 
+	// create services for all currencies
 	var CurrencyServices = map[string]service.CurrencyService{}
 	for s := range symbols {
 		CurrencyServices[s] = service.NewService(window, s, storage)
 	}
+	// lets feed dependcy injection with all configuration and services and Run
 	repository.NewFinnHubRepository(window, symbols, CurrencyServices, FinnHubAPIKey).Run()
 }
