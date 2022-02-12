@@ -19,11 +19,11 @@ type CurrencyJSON struct {
 // repo implements the PriceProviderRepository interface
 type repo struct {
 
-	// window size
-	window int
+	// Window size
+	Window int
 
-	// currency symbols
-	symbols map[string]float32
+	// currency Symbols
+	Symbols map[string]float32
 
 	// CurrencyServices map for each currency symbol
 	CurrencyServices map[string]service.CurrencyService
@@ -35,11 +35,11 @@ type repo struct {
 // NewFinnHubRepository is a constructor for the Finnhub adapter
 func NewFinnHubRepository(
 
-	window int,
-	symbols map[string]float32,
+	Window int,
+	Symbols map[string]float32,
 	CurrencyServices map[string]service.CurrencyService,
 	APIKey string) service.PriceProviderRepository {
-	return &repo{window, symbols, CurrencyServices, APIKey}
+	return &repo{Window, Symbols, CurrencyServices, APIKey}
 }
 
 // Run starts the websocket connection and calls the subscribe and start functions
@@ -60,7 +60,7 @@ func (r *repo) Run() error {
 
 // subscribe to the websocket
 func (r *repo) subscribe(w *websocket.Conn) {
-	for s := range r.symbols {
+	for s := range r.Symbols {
 		msgReceived, _ := json.Marshal(map[string]interface{}{"type": "subscribe", "symbol": s})
 		w.WriteMessage(websocket.TextMessage, msgReceived)
 	}
@@ -76,6 +76,7 @@ func (r *repo) startListening(w *websocket.Conn) {
 		if err != nil {
 			panic(err)
 		}
+		// as per challenge requirement, we only need to process the data if it is a type of trade
 		if respone.Type == "trade" {
 
 			// TODO: there are duplicate entries with same symbol, Only difference
