@@ -87,9 +87,6 @@ func (s *service) AddToChannel(currency domain.Currency) error {
 	// check if the channel is open for this currency
 	if channelOpened[currency.Symbol] == false {
 		channels[currency.Symbol] = make(chan domain.Currency)
-	}
-	// only run once
-	if channelOpened[currency.Symbol] == false {
 		channelOpened[currency.Symbol] = true
 		fmt.Println("Channel opened for: ", currency.Symbol)
 		go func(c <-chan domain.Currency) {
