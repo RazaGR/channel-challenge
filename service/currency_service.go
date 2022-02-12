@@ -3,18 +3,16 @@ package service
 import (
 	"fmt"
 	"math"
-	"sync"
 
 	"github.com/razagr/pensionera/domain"
 )
 
 // var
-//  @param wg
-//  @param ch
+//  @param channels
+//  @param channelOpened
 var (
-	wg          sync.WaitGroup
-	channelOpen = map[string]bool{}
-	channels    = map[string]chan domain.Currency{}
+	channels      = map[string]chan domain.Currency{}
+	channelOpened = map[string]bool{}
 )
 
 // service
@@ -87,22 +85,20 @@ func (s *service) GetAverage() float64 {
 //  @return error
 func (s *service) AddToChannel(currency domain.Currency) error {
 	// check if the channel is open for this currency
-	if channelOpen[currency.Symbol] == false {
+	if channelOpened[currency.Symbol] == false {
 		channels[currency.Symbol] = make(chan domain.Currency)
 	}
 	// only run once
-	if channelOpen[currency.Symbol] == false {
-		channelOpen[currency.Symbol] = true
+	if channelOpened[currency.Symbol] == false {
+		channelOpened[currency.Symbol] = true
 		fmt.Println("Channel opened for: ", currency.Symbol)
 		go func(c <-chan domain.Currency) {
-			defer wg.Done()
 
 			// loop through channel until the channel is closed
 			for cur := range c {
 				// when channel sends a value then send it to the service for processing
 				err := s.AddPrice(cur)
 				if err != nil {
-					defer wg.Done()
 					panic(err)
 				}
 			}
@@ -110,6 +106,5 @@ func (s *service) AddToChannel(currency domain.Currency) error {
 		}(channels[currency.Symbol])
 	}
 	channels[currency.Symbol] <- currency
-	wg.Wait()
 	return nil
 }
