@@ -12,8 +12,9 @@ import (
 //  @param wg
 //  @param ch
 var (
-	wg sync.WaitGroup
-	ch = make(chan domain.Currency)
+	wg          sync.WaitGroup
+	channelOpen = map[string]bool{}
+	channels    = map[string]chan domain.Currency{}
 )
 
 // service
@@ -30,7 +31,7 @@ type service struct {
 //  @param currency
 //  @return CurrencyService
 func NewService(window int, currency string, storage CurrencyRepository) CurrencyService {
-	prices := initPrices(window)
+	prices := make([]float64, window)
 	priceSliceIndex := 0
 	return &service{currency, window, prices, priceSliceIndex, storage}
 }
@@ -56,14 +57,14 @@ func (s *service) AddPrice(currency domain.Currency) error {
 		// reset the slice index
 		s.priceSliceIndex = 0
 		// reset the prices slice values to 0
-		s.prices = initPrices(s.window)
+		s.prices = make([]float64, s.window)
 		fmt.Printf("-> Currency: %s: Window: %d:  Timestamp: %d: Average: %v\n", s.currency, s.window, currency.Time, avg)
 		s.storage.Save(&currency, avg)
 	} else {
 		// increase the index of the slice
 		s.priceSliceIndex++
 	}
-	// fmt.Println(s.priceSliceIndex)
+	fmt.Println(s.priceSliceIndex, "-> ", currency.Symbol, "-> ", currency.Price)
 	return nil
 }
 
@@ -85,35 +86,30 @@ func (s *service) GetAverage() float64 {
 //  @param currency
 //  @return error
 func (s *service) AddToChannel(currency domain.Currency) error {
-	go func(c <-chan domain.Currency) {
-		defer wg.Done()
+	// check if the channel is open for this currency
+	if channelOpen[currency.Symbol] == false {
+		channels[currency.Symbol] = make(chan domain.Currency)
+	}
+	// only run once
+	if channelOpen[currency.Symbol] == false {
+		channelOpen[currency.Symbol] = true
+		fmt.Println("Channel opened for: ", currency.Symbol)
+		go func(c <-chan domain.Currency) {
+			defer wg.Done()
 
-		// loop through channel until the channel is closed
-		for cur := range c {
-			// when channel sends a value then send it to the service for processing
-			err := s.AddPrice(cur)
-			if err != nil {
-				defer wg.Done()
-				panic(err)
+			// loop through channel until the channel is closed
+			for cur := range c {
+				// when channel sends a value then send it to the service for processing
+				err := s.AddPrice(cur)
+				if err != nil {
+					defer wg.Done()
+					panic(err)
+				}
 			}
-		}
-		fmt.Println("Channel closed....")
-	}(ch)
-	ch <- currency
+			fmt.Println("Channel closed for: ", currency.Symbol)
+		}(channels[currency.Symbol])
+	}
+	channels[currency.Symbol] <- currency
 	wg.Wait()
 	return nil
-}
-
-// This helps to initialze prices slice with 0 values
-// we want to keep the system performant by reducing append calls
-//  @param window
-//  @return []float64
-func initPrices(window int) []float64 {
-
-	// create a slice with the size of the window
-	prices := make([]float64, window)
-	for i := 0; i < window; i++ {
-		prices[i] = 0
-	}
-	return prices
 }

@@ -129,23 +129,3 @@ func Test_service_AddToChannel(t *testing.T) {
 		})
 	}
 }
-
-func Test_initPrices(t *testing.T) {
-	type args struct {
-		window int
-	}
-	tests := []struct {
-		name string
-		args args
-		want []float64
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := initPrices(tt.args.window); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("initPrices() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}

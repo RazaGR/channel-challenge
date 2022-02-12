@@ -70,6 +70,7 @@ func (r *repo) subscribe(w *websocket.Conn) {
 //  @param w
 func (r *repo) start(w *websocket.Conn) {
 	for {
+
 		// respone will save the websocket JSON response
 		var respone CurrencyJSON
 		err := w.ReadJSON(&respone)
@@ -106,7 +107,7 @@ func (r *repo) start(w *websocket.Conn) {
 
 }
 
-// AddToChannel sends the currency data to the service channel
+// AddToChannel sends the currency data to the
 //  @receiver r
 //  @param currency
 //  @return error

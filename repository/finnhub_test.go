@@ -78,7 +78,7 @@ func Test_repo_subscribe(t *testing.T) {
 		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
+		t.Run(tt.name, func(_ *testing.T) {
 			r := &repo{
 				window:           tt.fields.window,
 				symbols:          tt.fields.symbols,
@@ -108,7 +108,7 @@ func Test_repo_start(t *testing.T) {
 		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
+		t.Run(tt.name, func(_ *testing.T) {
 			r := &repo{
 				window:           tt.fields.window,
 				symbols:          tt.fields.symbols,
