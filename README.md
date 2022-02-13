@@ -74,7 +74,7 @@ if you need to run this without docker, you have to add all your global variable
 - [x] Dockerize
 - [x] Error Handling - just some basic stuff
 - [x] Refactoring & Optimizing
-- [ ] Write Tests
+- [x] Write Tests - just some basic stuff, could add more if required.
 - [ ] Testing
 - [ ] Complete
 

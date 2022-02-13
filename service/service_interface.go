@@ -13,7 +13,7 @@ type CurrencyService interface {
 	//addPrice adds the price to the prices slice and calls getAverage()
 	addPrice(currency domain.Currency) error
 	// Run starts the service
-	Run()
+	Run() error
 }
 
 // CurrencyRepository is used to save currency data, such as database, file, etc.

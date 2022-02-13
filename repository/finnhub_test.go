@@ -3,12 +3,14 @@
 package repository
 
 import (
+	"errors"
 	"reflect"
 	"testing"
 
 	"github.com/gorilla/websocket"
 	"github.com/razagr/pensionera/domain"
 	"github.com/razagr/pensionera/service"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestNewFinnHubRepository(t *testing.T) {
@@ -52,6 +54,24 @@ func TestNewFinnHubRepository(t *testing.T) {
 	}
 }
 
+type repoMock struct {
+	mock.Mock
+	symbols map[string]float32
+	APIKey  string
+}
+
+func (m *repoMock) Run(channels map[string]chan domain.Currency) error {
+	args := m.Called()
+	return args.Get(0).(error)
+}
+func (m *repoMock) subscribe(w *websocket.Conn) error {
+	args := m.Called()
+	return args.Get(0).(error)
+}
+func (m *repoMock) startListening(w *websocket.Conn, channels map[string]chan domain.Currency) error {
+	args := m.Called()
+	return args.Get(0).(error)
+}
 func Test_repo_Run(t *testing.T) {
 	type fields struct {
 		symbols map[string]float32
@@ -61,21 +81,41 @@ func Test_repo_Run(t *testing.T) {
 		channels map[string]chan domain.Currency
 	}
 	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		wantErr bool
+		name   string
+		fields fields
+		args   args
+		want   error
 	}{
+		{
+			name: "Run",
+			fields: fields{
+				symbols: map[string]float32{
+					"AAPL": 0.01,
+					"MSFT": 0.01,
+					"GOOG": 0.01,
+				},
+				APIKey: "",
+			},
+			args: args{
+				channels: map[string]chan domain.Currency{
+					"AAPL": make(chan domain.Currency),
+					"MSFT": make(chan domain.Currency),
+					"GOOG": make(chan domain.Currency),
+				},
+			},
+			want: nil,
+		},
 		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			r := &repo{
+			r := &repoMock{
 				symbols: tt.fields.symbols,
 				APIKey:  tt.fields.APIKey,
 			}
-			if err := r.Run(tt.args.channels); (err != nil) != tt.wantErr {
-				t.Errorf("repo.Run() error = %v, wantErr %v", err, tt.wantErr)
+			r.On("Run", mock.Anything).Return(errors.New("should return an error"))
+			if err := r.Run(tt.args.channels); err.Error() != "should return an error" {
+				t.Errorf("Run() error = %v, wantErr %v", err, tt.want)
 			}
 		})
 	}
@@ -93,16 +133,36 @@ func Test_repo_subscribe(t *testing.T) {
 		name   string
 		fields fields
 		args   args
+		want   error
 	}{
+		{
+			name: "subscribe",
+			fields: fields{
+				symbols: map[string]float32{
+					"AAPL": 0.01,
+					"MSFT": 0.01,
+					"GOOG": 0.01,
+				},
+				APIKey: "",
+			},
+			args: args{
+				w: &websocket.Conn{},
+			},
+			want: nil,
+		},
+
 		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			r := &repo{
+			r := &repoMock{
 				symbols: tt.fields.symbols,
 				APIKey:  tt.fields.APIKey,
 			}
-			r.subscribe(tt.args.w)
+			r.On("subscribe", mock.Anything).Return(errors.New("should return an error"))
+			if err := r.subscribe(tt.args.w); err.Error() != "should return an error" {
+				t.Errorf("subscribe() error = %v, wantErr %v", err, tt.want)
+			}
 		})
 	}
 }
@@ -120,16 +180,41 @@ func Test_repo_startListening(t *testing.T) {
 		name   string
 		fields fields
 		args   args
+		want   error
 	}{
+		{
+			name: "startListening",
+			fields: fields{
+				symbols: map[string]float32{
+					"AAPL": 0.01,
+					"MSFT": 0.01,
+					"GOOG": 0.01,
+				},
+				APIKey: "",
+			},
+			args: args{
+				w: &websocket.Conn{},
+				channels: map[string]chan domain.Currency{
+					"AAPL": make(chan domain.Currency),
+					"MSFT": make(chan domain.Currency),
+					"GOOG": make(chan domain.Currency),
+				},
+			},
+			want: nil,
+		},
 		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			r := &repo{
+			r := &repoMock{
 				symbols: tt.fields.symbols,
 				APIKey:  tt.fields.APIKey,
 			}
-			r.startListening(tt.args.w, tt.args.channels)
+			r.On("startListening", mock.Anything, mock.Anything).Return(errors.New("should return an error"))
+			if err := r.startListening(tt.args.w, tt.args.channels); err.Error() != "should return an error" {
+				t.Errorf("startListening() error = %v, wantErr %v", err, tt.want)
+			}
+
 		})
 	}
 }

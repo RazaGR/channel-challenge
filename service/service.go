@@ -49,7 +49,7 @@ func NewService(window int, symbols map[string]float32, storage CurrencyReposito
 	return &service{window, symbols, prices, priceSliceIndex, storage, repo}
 }
 
-func (s *service) Run() {
+func (s *service) Run() error {
 
 	// setup the channels for all currencies
 	for c := range s.symbols {
@@ -78,6 +78,7 @@ func (s *service) Run() {
 	}
 	// start the repository to get the currency data
 	s.repo.Run(channels)
+	return nil
 }
 
 // addPrice adds the price to the prices slice and calls getAverage()
