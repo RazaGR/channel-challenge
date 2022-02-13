@@ -22,6 +22,5 @@ func main() {
 	repo := repository.NewFinnHubRepository(symbols, finnHubAPIKey)
 
 	// inject dependencies and Run our service
-	svc := service.NewService(window, symbols, storage, repo)
-	svc.Run()
+	service.NewService(window, symbols, storage, repo).Run()
 }

@@ -23,21 +23,6 @@ RUN apk add ca-certificates
 
 COPY --from=build_base /tmp/pensionera-app/out/pensionera-app /app/pensionera-app
 
-# Need mobgodb inside? let's not, comment it out
-
-# RUN echo 'http://dl-cdn.alpinelinux.org/alpine/v3.6/main' >> /etc/apk/repositories
-# RUN echo 'http://dl-cdn.alpinelinux.org/alpine/v3.6/community' >> /etc/apk/repositories
-# RUN  apk update
-# RUN  apk add openrc
-# RUN  apk add mongodb
-# RUN  apk add mongodb-tools
-# RUN mkdir -p /data/db/
-# RUN chown root /data/db
-# RUN chmod 777 /data/db
-# RUN rc-update add mongodb default
-# RUN rc-service mongodb start
-
-
 # Expose the app
 EXPOSE 8080
 # Run 

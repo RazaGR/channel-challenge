@@ -51,26 +51,30 @@ func NewService(window int, symbols map[string]float32, storage CurrencyReposito
 
 func (s *service) Run() {
 
-	// setup the channels
+	// setup the channels for all currencies
 	for c := range s.symbols {
 		s.prices[c] = make([]float64, s.window)
 		s.priceSliceIndex[c] = 0
 		channels[c] = make(chan domain.Currency)
 		fmt.Println("Channel opened for: ", c)
-		go func(c <-chan domain.Currency) {
-			// loop through channel until the channel is closed
-			for cur := range c {
+
+		//setup listener for each channel
+		go func(ch <-chan domain.Currency) {
+			// listen channel until it is closed
+			for cur := range ch {
 				// Lock add operation to save  from race condition
 				addMutex.Lock()
 				// when channel sends a value then send it to the service for processing
 				err := s.addPrice(cur)
+				// remove lock
 				addMutex.Unlock()
 				if err != nil {
 					fmt.Printf("Error: %v\n", err)
 				}
 			}
-			fmt.Println("Channel closed for: ", c)
+			fmt.Println("Channel closed for: ", ch)
 		}(channels[c])
+
 	}
 	// start the repository to get the currency data
 	s.repo.Run(channels)
