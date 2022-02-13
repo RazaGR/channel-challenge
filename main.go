@@ -18,13 +18,10 @@ func main() {
 	// get our storage repository to store the data in CSV format
 	storage := repository.NewFileStorage()
 
-	// create services for all currencies
-	var CurrencyServices = map[string]service.CurrencyService{}
-	for s := range Symbols {
-		CurrencyServices[s] = service.NewService(Window, s, storage)
-	}
+	// create service
+	service := service.NewService(Window, Symbols, storage)
 
 	// inject dependcies and Run
-	repo := repository.NewFinnHubRepository(Window, Symbols, CurrencyServices, FinnHubAPIKey)
+	repo := repository.NewFinnHubRepository(Window, Symbols, service, FinnHubAPIKey)
 	repo.Run()
 }

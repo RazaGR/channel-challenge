@@ -22,75 +22,77 @@ var (
 // service
 type service struct {
 
-	// currency symbol
-	currency string
-
 	// window size
-	window int
+	Window int
+
+	// currency symbol
+	Symbols map[string]float32
 
 	// prices slice
-	prices []float64
+	Prices map[string][]float64
 
-	// priceSliceIndex tracks the index of the slice
-	priceSliceIndex int
+	// PriceSliceIndex tracks the index of the slice
+	PriceSliceIndex map[string]int
 
 	// storage is the repository for saving currency data
 	storage CurrencyRepository
 }
 
 // NewService creates a new service for a currency
-func NewService(window int, currency string, storage CurrencyRepository) CurrencyService {
+func NewService(Window int, Symbols map[string]float32, storage CurrencyRepository) CurrencyService {
+	Prices := make(map[string][]float64)
+	PriceSliceIndex := make(map[string]int)
 
-	// initialize the prices slice
-	prices := make([]float64, window)
-
-	// initialize the priceSliceIndex with 0
-	priceSliceIndex := 0
-	return &service{currency, window, prices, priceSliceIndex, storage}
+	for s := range Symbols {
+		Prices[s] = make([]float64, Window)
+		PriceSliceIndex[s] = 0
+	}
+	return &service{Window, Symbols, Prices, PriceSliceIndex, storage}
 }
 
 // AddPrice adds the price to the prices slice and calls GetAverage()
-// It also resets the priceSliceIndex to 0 if it reaches the window size
+// It also resets the PriceSliceIndex to 0 if it reaches the window size
 func (s *service) AddPrice(currency domain.Currency) error {
 	if math.IsNaN(currency.Price) && math.IsInf(currency.Price, 0) {
 		return fmt.Errorf("Invalid price: %f", currency.Price)
 	}
 
 	// add the new price to the prices slice
-	s.prices[s.priceSliceIndex] = currency.Price
+	s.Prices[currency.Symbol][s.PriceSliceIndex[currency.Symbol]] = currency.Price
 
 	// our slice is full, lets calculate the moving average and reset the slice
 	// we have to subtract 1 from the window because we are using a circular buffer
-	if s.priceSliceIndex >= (s.window - 1) {
-		avg := s.GetAverage()
+	if s.PriceSliceIndex[currency.Symbol] >= (s.Window - 1) {
+		avg := s.GetAverage(currency)
 
 		// reset the slice index for circular buffer
-		s.priceSliceIndex = 0
+		s.PriceSliceIndex[currency.Symbol] = 0
 		// reset the prices slice values to 0
-		s.prices = make([]float64, s.window)
+		s.Prices[currency.Symbol] = make([]float64, s.Window)
 
 		// starts a goroutine to save the average to the database
 		go func() {
-			fmt.Printf("-> Currency: %s: Window: %d:  Timestamp: %d: Average: %v\n", s.currency, s.window, currency.Time, avg)
+			fmt.Printf("-> Currency: %s: Window: %d:  Timestamp: %d: Average: %v\n", currency.Symbol, s.Window, currency.Time, avg)
 			s.storage.Save(currency, avg)
 		}()
 	} else {
 		// increase the index of the slice
-		s.priceSliceIndex++
+		s.PriceSliceIndex[currency.Symbol]++
 	}
-	fmt.Println(s.priceSliceIndex, "-> ", currency.Symbol, "-> ", currency.Price)
+
+	fmt.Println(s.PriceSliceIndex[currency.Symbol], "-> ", currency.Symbol, "-> ", currency.Price)
 	return nil
 }
 
 // Returns the average of the prices slice divided by the window size
-func (s *service) GetAverage() float64 {
+func (s *service) GetAverage(currency domain.Currency) float64 {
 	var sum float64 = 0
 
 	// count the sum of the prices slice
-	for _, price := range s.prices {
+	for _, price := range s.Prices[currency.Symbol] {
 		sum += price
 	}
-	return sum / float64(s.window)
+	return sum / float64(s.Window)
 }
 
 // add retrived currency detail from websocket to the map using go channel

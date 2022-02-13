@@ -9,7 +9,7 @@ import (
 type CurrencyService interface {
 
 	// GetAverage returns the average price of the currency
-	GetAverage() float64
+	GetAverage(currency domain.Currency) float64
 	//AddPrice adds the price to the prices slice and calls GetAverage()
 	AddPrice(currency domain.Currency) error
 	// AddToChannel adds the price to the channel

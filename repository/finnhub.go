@@ -26,8 +26,8 @@ type repo struct {
 	// currency Symbols
 	Symbols map[string]float32
 
-	// CurrencyServices map for each currency symbol
-	CurrencyServices map[string]service.CurrencyService
+	// CurrencyService map for each currency symbol
+	CurrencyService service.CurrencyService
 
 	// APIKey is used to authenticate the websocket connection
 	APIKey string
@@ -38,9 +38,9 @@ func NewFinnHubRepository(
 
 	Window int,
 	Symbols map[string]float32,
-	CurrencyServices map[string]service.CurrencyService,
+	CurrencyService service.CurrencyService,
 	APIKey string) service.PriceProviderRepository {
-	return &repo{Window, Symbols, CurrencyServices, APIKey}
+	return &repo{Window, Symbols, CurrencyService, APIKey}
 }
 
 // Run starts the websocket connection and calls the subscribe and start functions
@@ -101,7 +101,7 @@ func (r *repo) startListening(w *websocket.Conn) {
 					go func() {
 
 						// send the pricing data to the CurrencyService
-						err := r.CurrencyServices[curr.Symbol].AddToChannel(curr)
+						err := r.CurrencyService.AddToChannel(curr)
 						if err != nil {
 							panic(err)
 						}
