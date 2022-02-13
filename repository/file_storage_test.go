@@ -15,6 +15,10 @@ func TestNewFileStorage(t *testing.T) {
 		name string
 		want service.CurrencyRepository
 	}{
+		{
+			name: "NewFileStorage",
+			want: &fileStroageRepository{},
+		},
 		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
