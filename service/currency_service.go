@@ -5,6 +5,7 @@ package service
 import (
 	"fmt"
 	"math"
+	"sync"
 
 	"github.com/razagr/pensionera/domain"
 )
@@ -17,6 +18,8 @@ var (
 
 	// channelOpened keeps track of which channels are open
 	channelOpened = map[string]bool{}
+
+	pricesMapMutex = sync.RWMutex{}
 )
 
 // service
@@ -116,10 +119,13 @@ func (s *service) AddToChannel(currency domain.Currency) error {
 
 			// loop through channel until the channel is closed
 			for cur := range c {
+				// Lock add operation to save  from race condition
+				pricesMapMutex.Lock()
 				// when channel sends a value then send it to the service for processing
 				err := s.addPrice(cur)
+				pricesMapMutex.Unlock()
 				if err != nil {
-					panic(err)
+					fmt.Printf("Error: %v\n", err)
 				}
 			}
 			fmt.Println("Channel closed for: ", currency.Symbol)

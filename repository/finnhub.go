@@ -103,7 +103,7 @@ func (r *repo) startListening(w *websocket.Conn, currencyService service.Currenc
 						// send the pricing data to the CurrencyService
 						err := currencyService.AddToChannel(curr)
 						if err != nil {
-							panic(err)
+							fmt.Printf("Error: %v\n", err)
 						}
 					}()
 				}

@@ -14,6 +14,7 @@ type CurrencyService interface {
 	addPrice(currency domain.Currency) error
 	// AddToChannel adds the price to the channel
 	AddToChannel(currency domain.Currency) error
+	// Run starts the service
 	Run()
 }
 

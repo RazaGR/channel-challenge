@@ -21,7 +21,7 @@ func main() {
 	// create currency data provider
 	repo := repository.NewFinnHubRepository(window, symbols, finnHubAPIKey)
 
-	// inject dependcies and Run our service
+	// inject dependencies and Run our service
 	svc := service.NewService(window, symbols, storage, repo)
 	svc.Run()
 }
