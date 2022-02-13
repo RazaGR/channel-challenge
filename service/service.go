@@ -27,6 +27,7 @@ type CurrencyRepository interface {
 
 // DataProviderRepository is used to get currency data, most likely from a websocket,GRPC, or REST API
 type PriceProviderRepository interface {
-	// Run starts the data provider
-	Run(CurrencyService CurrencyService) error
+	// Run accepts a map of channels and starts the websocket connection
+	// it sends the currency data to the channels
+	Run(channels map[string]chan domain.Currency) error
 }
