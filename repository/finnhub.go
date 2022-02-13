@@ -20,9 +20,6 @@ type CurrencyJSON struct {
 // repo implements the PriceProviderRepository interface
 type repo struct {
 
-	// Window size
-	Window int
-
 	// currency Symbols
 	Symbols map[string]float32
 
@@ -36,11 +33,10 @@ type repo struct {
 // NewFinnHubRepository is a constructor for the Finnhub adapter
 func NewFinnHubRepository(
 
-	Window int,
 	Symbols map[string]float32,
 	// CurrencyService service.CurrencyService,
 	APIKey string) service.PriceProviderRepository {
-	return &repo{Window, Symbols, APIKey}
+	return &repo{Symbols, APIKey}
 }
 
 // Run starts the websocket connection and calls the subscribe and start functions

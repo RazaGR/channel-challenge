@@ -19,7 +19,7 @@ func main() {
 	storage := repository.NewFileStorage()
 
 	// create currency data provider
-	repo := repository.NewFinnHubRepository(window, symbols, finnHubAPIKey)
+	repo := repository.NewFinnHubRepository(symbols, finnHubAPIKey)
 
 	// inject dependencies and Run our service
 	svc := service.NewService(window, symbols, storage, repo)
