@@ -16,9 +16,6 @@ var (
 	// each country has it's own channel
 	channels = map[string]chan domain.Currency{}
 
-	// channelOpened keeps track of which channels are open
-	channelOpened = map[string]bool{}
-
 	// a mutex to prevent race condition on Add()
 	addMutex = sync.RWMutex{}
 )
@@ -59,7 +56,6 @@ func (s *service) Run() {
 		s.prices[c] = make([]float64, s.window)
 		s.priceSliceIndex[c] = 0
 		channels[c] = make(chan domain.Currency)
-		channelOpened[c] = true
 		fmt.Println("Channel opened for: ", c)
 		go func(c <-chan domain.Currency) {
 			// loop through channel until the channel is closed
