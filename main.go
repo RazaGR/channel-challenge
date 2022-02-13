@@ -19,9 +19,9 @@ func main() {
 	storage := repository.NewFileStorage()
 
 	// create service
-	service := service.NewService(Window, Symbols, storage)
+	svc := service.NewService(Window, Symbols, storage)
 
 	// inject dependcies and Run
-	repo := repository.NewFinnHubRepository(Window, Symbols, service, FinnHubAPIKey)
+	repo := repository.NewFinnHubRepository(Window, Symbols, svc, FinnHubAPIKey)
 	repo.Run()
 }
