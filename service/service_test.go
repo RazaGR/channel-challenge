@@ -21,6 +21,23 @@ func TestNewService(t *testing.T) {
 		args args
 		want CurrencyService
 	}{
+		// {
+		// 	name: "Test NewService",
+		// 	args: args{
+		// 		window:  10,
+		// 		symbols: map[string]float32{"USD": 1, "EUR": 1.1, "GBP": 1.2},
+		// 		storage: &CurrencyRepositoryMock{},
+		// 		repo:    &PriceProviderRepositoryMock{},
+		// 	},
+		// 	want: &service{
+		// 		window:  10,
+		// 		symbols: map[string]float32{"USD": 1, "EUR": 1.1, "GBP": 1.2},
+		// 		prices:  map[string][]float64{"USD": []float64{}, "EUR": []float64{}, "GBP": []float64{}},
+		// 		storage: &CurrencyRepositoryMock{},
+		// 		repo:    &PriceProviderRepositoryMock{},
+		// 	},
+		// },
+
 		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
@@ -80,6 +97,25 @@ func Test_service_addPrice(t *testing.T) {
 		args    args
 		wantErr bool
 	}{
+		// {
+		// 	name: "Test addPrice",
+		// 	fields: fields{
+		// 		window:          10,
+		// 		symbols:         map[string]float32{"USD": 1, "EUR": 1.1, "GBP": 1.2},
+		// 		prices:          map[string][]float64{"USD": []float64{}, "EUR": []float64{}, "GBP": []float64{}},
+		// 		priceSliceIndex: map[string]int{"USD": 0, "EUR": 0, "GBP": 0},
+		// 		storage:         &CurrencyRepositoryMock{},
+		// 		repo:            &PriceProviderRepositoryMock{},
+		// 	},
+		// 	args: args{
+		// 		currency: domain.Currency{
+		// 			Symbol: "USD",
+		// 			Price:  1.1,
+		// 		},
+		// 	},
+		// 	wantErr: false,
+		// },
+
 		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
@@ -117,6 +153,25 @@ func Test_service_getAverage(t *testing.T) {
 		args   args
 		want   float64
 	}{
+		// {
+		// 	name: "Test getAverage",
+		// 	fields: fields{
+		// 		window:          10,
+		// 		symbols:         map[string]float32{"USD": 1, "EUR": 1.1, "GBP": 1.2},
+		// 		prices:          map[string][]float64{"USD": []float64{}, "EUR": []float64{}, "GBP": []float64{}},
+		// 		priceSliceIndex: map[string]int{"USD": 0, "EUR": 0, "GBP": 0},
+		// 		storage:         &CurrencyRepositoryMock{},
+		// 		repo:            &PriceProviderRepositoryMock{},
+		// 	},
+		// 	args: args{
+		// 		currency: domain.Currency{
+		// 			Symbol: "USD",
+		// 			Price:  1.1,
+		// 		},
+		// 	},
+		// 	want: 1.1,
+		// },
+
 		// TODO: Add test cases.
 	}
 	for _, tt := range tests {

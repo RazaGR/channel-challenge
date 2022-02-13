@@ -21,6 +21,26 @@ func TestNewFinnHubRepository(t *testing.T) {
 		args args
 		want service.PriceProviderRepository
 	}{
+		{
+			name: "FinnhubRepository",
+			args: args{
+				symbols: map[string]float32{
+					"AAPL": 0.01,
+					"MSFT": 0.01,
+					"GOOG": 0.01,
+				},
+				APIKey: "",
+			},
+			want: &repo{
+				symbols: map[string]float32{
+					"AAPL": 0.01,
+					"MSFT": 0.01,
+					"GOOG": 0.01,
+				},
+				APIKey: "",
+			},
+		},
+
 		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
@@ -130,6 +150,23 @@ func Test_repo_duplicate(t *testing.T) {
 		wantOk bool
 		wantI  int
 	}{
+		{
+			name: "duplicate",
+			fields: fields{
+				symbols: map[string]float32{
+					"AAPL": 0.01,
+					"MSFT": 0.01,
+					"GOOG": 0.01,
+				},
+				APIKey: "",
+			},
+			args: args{
+				val:   "AAPL",
+				array: []string{"AAPL", "MSFT", "GOOG"},
+			},
+			wantOk: true,
+			wantI:  0,
+		},
 		// TODO: Add test cases.
 	}
 	for _, tt := range tests {

@@ -37,6 +37,18 @@ func Test_fileStroageRepository_Save(t *testing.T) {
 		args    args
 		wantErr bool
 	}{
+		{
+			name: "Save currency data to a file",
+			r:    &fileStroageRepository{},
+			args: args{
+				currency: domain.Currency{
+					Symbol: "USD",
+					Price:  1.0,
+				},
+				avg: 1.0,
+			},
+			wantErr: false,
+		},
 		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
