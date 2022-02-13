@@ -13,15 +13,15 @@ func main() {
 	godotenv.Load()
 
 	// Configure the environment variables
-	Window, Symbols, FinnHubAPIKey := config.NewConfig().Configuration()
+	window, symbols, finnHubAPIKey := config.NewConfig().Configuration()
 
 	// get our storage repository to store the data in CSV format
 	storage := repository.NewFileStorage()
 
-	// create service
-	svc := service.NewService(Window, Symbols, storage)
+	// create currency data provider
+	repo := repository.NewFinnHubRepository(window, symbols, finnHubAPIKey)
 
-	// inject dependcies and Run
-	repo := repository.NewFinnHubRepository(Window, Symbols, svc, FinnHubAPIKey)
-	repo.Run()
+	// inject dependcies and Run our service
+	svc := service.NewService(window, symbols, storage, repo)
+	svc.Run()
 }

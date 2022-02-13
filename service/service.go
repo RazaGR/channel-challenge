@@ -8,12 +8,13 @@ import (
 // and save it to the database (CurrencyRepository)
 type CurrencyService interface {
 
-	// GetAverage returns the average price of the currency
-	GetAverage(currency domain.Currency) float64
-	//AddPrice adds the price to the prices slice and calls GetAverage()
-	AddPrice(currency domain.Currency) error
+	// getAverage returns the average price of the currency
+	getAverage(currency domain.Currency) float64
+	//addPrice adds the price to the prices slice and calls getAverage()
+	addPrice(currency domain.Currency) error
 	// AddToChannel adds the price to the channel
 	AddToChannel(currency domain.Currency) error
+	Run()
 }
 
 // CurrencyRepository is used to save currency data, such as database, file, etc.
@@ -26,5 +27,5 @@ type CurrencyRepository interface {
 // DataProviderRepository is used to get currency data, most likely from a websocket,GRPC, or REST API
 type PriceProviderRepository interface {
 	// Run starts the data provider
-	Run() error
+	Run(CurrencyService CurrencyService) error
 }

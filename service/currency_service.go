@@ -36,10 +36,12 @@ type service struct {
 
 	// storage is the repository for saving currency data
 	storage CurrencyRepository
+
+	repo PriceProviderRepository
 }
 
 // NewService creates a new service for a currency
-func NewService(Window int, Symbols map[string]float32, storage CurrencyRepository) CurrencyService {
+func NewService(Window int, Symbols map[string]float32, storage CurrencyRepository, repo PriceProviderRepository) CurrencyService {
 	Prices := make(map[string][]float64)
 	PriceSliceIndex := make(map[string]int)
 
@@ -47,12 +49,16 @@ func NewService(Window int, Symbols map[string]float32, storage CurrencyReposito
 		Prices[s] = make([]float64, Window)
 		PriceSliceIndex[s] = 0
 	}
-	return &service{Window, Symbols, Prices, PriceSliceIndex, storage}
+	return &service{Window, Symbols, Prices, PriceSliceIndex, storage, repo}
 }
 
-// AddPrice adds the price to the prices slice and calls GetAverage()
+func (s *service) Run() {
+	s.repo.Run(s)
+}
+
+// addPrice adds the price to the prices slice and calls getAverage()
 // It also resets the PriceSliceIndex to 0 if it reaches the window size
-func (s *service) AddPrice(currency domain.Currency) error {
+func (s *service) addPrice(currency domain.Currency) error {
 	if math.IsNaN(currency.Price) && math.IsInf(currency.Price, 0) {
 		return fmt.Errorf("Invalid price: %f", currency.Price)
 	}
@@ -63,7 +69,7 @@ func (s *service) AddPrice(currency domain.Currency) error {
 	// our slice is full, lets calculate the moving average and reset the slice
 	// we have to subtract 1 from the window because we are using a circular buffer
 	if s.PriceSliceIndex[currency.Symbol] >= (s.Window - 1) {
-		avg := s.GetAverage(currency)
+		avg := s.getAverage(currency)
 
 		// reset the slice index for circular buffer
 		s.PriceSliceIndex[currency.Symbol] = 0
@@ -85,7 +91,7 @@ func (s *service) AddPrice(currency domain.Currency) error {
 }
 
 // Returns the average of the prices slice divided by the window size
-func (s *service) GetAverage(currency domain.Currency) float64 {
+func (s *service) getAverage(currency domain.Currency) float64 {
 	var sum float64 = 0
 
 	// count the sum of the prices slice
@@ -111,7 +117,7 @@ func (s *service) AddToChannel(currency domain.Currency) error {
 			// loop through channel until the channel is closed
 			for cur := range c {
 				// when channel sends a value then send it to the service for processing
-				err := s.AddPrice(cur)
+				err := s.addPrice(cur)
 				if err != nil {
 					panic(err)
 				}

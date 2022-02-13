@@ -26,8 +26,8 @@ type repo struct {
 	// currency Symbols
 	Symbols map[string]float32
 
-	// CurrencyService map for each currency symbol
-	CurrencyService service.CurrencyService
+	// // CurrencyService map for each currency symbol
+	// CurrencyService service.CurrencyService
 
 	// APIKey is used to authenticate the websocket connection
 	APIKey string
@@ -38,13 +38,13 @@ func NewFinnHubRepository(
 
 	Window int,
 	Symbols map[string]float32,
-	CurrencyService service.CurrencyService,
+	// CurrencyService service.CurrencyService,
 	APIKey string) service.PriceProviderRepository {
-	return &repo{Window, Symbols, CurrencyService, APIKey}
+	return &repo{Window, Symbols, APIKey}
 }
 
 // Run starts the websocket connection and calls the subscribe and start functions
-func (r *repo) Run() error {
+func (r *repo) Run(currencyService service.CurrencyService) error {
 	w, _, err := websocket.DefaultDialer.Dial("wss://ws.finnhub.io?token="+r.APIKey, nil)
 	if err != nil {
 		panic(err)
@@ -55,7 +55,7 @@ func (r *repo) Run() error {
 	r.subscribe(w)
 
 	// start listening to the websocket
-	r.startListening(w)
+	r.startListening(w, currencyService)
 	return nil
 }
 
@@ -69,7 +69,7 @@ func (r *repo) subscribe(w *websocket.Conn) {
 }
 
 // start listening to the websocket and passes the pricing data to the CurrencyServices
-func (r *repo) startListening(w *websocket.Conn) {
+func (r *repo) startListening(w *websocket.Conn, currencyService service.CurrencyService) {
 	for {
 
 		// respone will save the websocket JSON data
@@ -101,7 +101,7 @@ func (r *repo) startListening(w *websocket.Conn) {
 					go func() {
 
 						// send the pricing data to the CurrencyService
-						err := r.CurrencyService.AddToChannel(curr)
+						err := currencyService.AddToChannel(curr)
 						if err != nil {
 							panic(err)
 						}
