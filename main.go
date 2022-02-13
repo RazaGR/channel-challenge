@@ -9,7 +9,7 @@ import (
 
 func main() {
 
-	//Let's load the .env file, you must need to have this file in the root of the project
+	//Load env variables
 	godotenv.Load()
 
 	// Configure the environment variables
@@ -24,7 +24,7 @@ func main() {
 		CurrencyServices[s] = service.NewService(Window, s, storage)
 	}
 
-	// feed dependcy and Run
+	// inject dependcies and Run
 	repo := repository.NewFinnHubRepository(Window, Symbols, CurrencyServices, FinnHubAPIKey)
 	repo.Run()
 }

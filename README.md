@@ -81,18 +81,4 @@ if you need to run this without docker, you have to add all your global variable
 ## Known Issues
 
 - [ ] In JSON response of Finnhub there are duplicate entries of same currency symbol, Only difference in the map is Volume value, I am just grabbing one
-- [ ] When running multiple currencies, websocket is sending multiple streams in less then a second, which is causing window size to fill quickly, if we need to I can change this to time instead of data size.
-
-```
-    // last entry time
-	t1 := time.Now()
-    ......
-    // after getting json data I can check if diff is greater than a second of last entry for current currency
-	t2 := time.Now()
-	diff := t2.Sub(t1)
-	if(diff > Second){
-        // process this currency
-    }
-
-    // or alternatively give this task to database provider, by checking last entry in database time
-```
+- [ ] When running multiple currencies, sometimes websocket is sending multiple streams in less then a second, which is causing window size to fill quickly, if we need to I can change this to time instead of data size.

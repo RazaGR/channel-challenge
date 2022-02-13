@@ -4,6 +4,7 @@ package repository
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/gorilla/websocket"
 	"github.com/razagr/pensionera/domain"
@@ -61,6 +62,7 @@ func (r *repo) Run() error {
 // subscribe to the websocket
 func (r *repo) subscribe(w *websocket.Conn) {
 	for s := range r.Symbols {
+		fmt.Println("Subscribing to ", s)
 		msgReceived, _ := json.Marshal(map[string]interface{}{"type": "subscribe", "symbol": s})
 		w.WriteMessage(websocket.TextMessage, msgReceived)
 	}
