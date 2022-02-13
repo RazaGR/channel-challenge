@@ -81,4 +81,4 @@ if you need to run this without docker, you have to add all your global variable
 ## Known Issues
 
 - [ ] In JSON response of Finnhub there are duplicate entries of same currency symbol, Only difference in the map is Volume value, I am just grabbing one
-- [ ] When running multiple currencies, sometimes websocket is sending multiple streams in less then a second, which is causing window size to fill quickly, if we need to I can change this to time instead of data size.
+- [ ] When running multiple currencies, sometimes websocket is sending multiple streams in less then a second, which is causing window size to fill quickly, if we need to, I can change this to time instead of data value.

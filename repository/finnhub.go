@@ -20,8 +20,8 @@ type CurrencyJSON struct {
 // repo implements the PriceProviderRepository interface
 type repo struct {
 
-	// currency Symbols
-	Symbols map[string]float32
+	// currency symbols
+	symbols map[string]float32
 
 	// APIKey is used to authenticate the websocket connection
 	APIKey string
@@ -30,9 +30,9 @@ type repo struct {
 // NewFinnHubRepository is a constructor for the Finnhub adapter
 func NewFinnHubRepository(
 
-	Symbols map[string]float32,
+	symbols map[string]float32,
 	APIKey string) service.PriceProviderRepository {
-	return &repo{Symbols, APIKey}
+	return &repo{symbols, APIKey}
 }
 
 // Run starts the websocket connection and calls the subscribe and start functions
@@ -53,8 +53,8 @@ func (r *repo) Run(channels map[string]chan domain.Currency) error {
 
 // subscribe to the websocket
 func (r *repo) subscribe(w *websocket.Conn) {
-	for s := range r.Symbols {
-		fmt.Println("Subscribing to ", s)
+	for s := range r.symbols {
+		fmt.Println("Subscribe to ", s)
 		msgReceived, _ := json.Marshal(map[string]interface{}{"type": "subscribe", "symbol": s})
 		w.WriteMessage(websocket.TextMessage, msgReceived)
 	}
@@ -76,25 +76,23 @@ func (r *repo) startListening(w *websocket.Conn, channels map[string]chan domain
 			// TODO: there are duplicate entries with same symbol, Only difference
 			// in the map is the Volume value,  we should discuess if we need to process all of them or not
 
-			// existSymbol helps to avoid duplicate entries in the response
-			existSymbol := []string{}
+			// duplicateSymbol helps to avoid duplicate entries in the response
+			duplicateSymbol := []string{}
 
 			for _, curr := range respone.Data {
 
-				// check if symbol already exist in the existSymbol slice
-				found, _ := r.found(curr.Symbol, existSymbol)
+				// check if symbol already exist in the duplicateSymbol slice
+				duplicate, _ := r.duplicate(curr.Symbol, duplicateSymbol)
 
 				// if  symbol does not exist in the slice then add it to
-				//  existSymbol slice and also perform the add operation
-				if !found {
-					existSymbol = append(existSymbol, curr.Symbol)
+				//  duplicateSymbol slice and also perform the add operation
+				if !duplicate {
+					duplicateSymbol = append(duplicateSymbol, curr.Symbol)
 
 					// start a new goroutine
 					go func() {
-
-						// send the pricing data to the CurrencyService
+						// send the pricing data to its channel
 						channels[curr.Symbol] <- curr
-						// err := currencyService.AddToChannel(curr)
 						if err != nil {
 							fmt.Printf("Error: %v\n", err)
 						}
@@ -107,9 +105,8 @@ func (r *repo) startListening(w *websocket.Conn, channels map[string]chan domain
 
 }
 
-// found is a function that checks if the symbol already exist in the slice
-// this is required to avoid duplicate entries I was receivng in the websocket JSON response
-func (r *repo) found(val string, array []string) (ok bool, i int) {
+// duplicate is required to avoid duplicate entries I was receivng in the websocket JSON response
+func (r *repo) duplicate(val string, array []string) (ok bool, i int) {
 	for i = range array {
 		if ok = array[i] == val; ok {
 			return
