@@ -30,7 +30,7 @@ func (m *PriceProviderRepositoryMock) Run(channels map[string]chan domain.Curren
 	return args.Get(0).(error)
 }
 
-type serviceMock struct {
+type ServiceMock struct {
 	mock.Mock
 	window          int
 	symbols         map[string]float32
@@ -40,17 +40,17 @@ type serviceMock struct {
 	repo            PriceProviderRepositoryMock
 }
 
-func (m *serviceMock) Run() error {
+func (m *ServiceMock) Run() error {
 	args := m.Called()
 	return args.Get(0).(error)
 }
 
-func (m *serviceMock) addPrice(currency domain.Currency) error {
+func (m *ServiceMock) addPrice(currency domain.Currency) error {
 
 	args := m.Called()
 	return args.Get(0).(error)
 }
-func (m *serviceMock) getAverage(currency domain.Currency) float64 {
+func (m *ServiceMock) getAverage(currency domain.Currency) float64 {
 	var sum float64 = 0
 
 	// count the sum of the prices slice
@@ -137,7 +137,7 @@ func Test_service_Run(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := &serviceMock{
+			s := &ServiceMock{
 				window:          tt.fields.window,
 				symbols:         tt.fields.symbols,
 				prices:          tt.fields.prices,
@@ -197,7 +197,7 @@ func Test_service_addPrice(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := &serviceMock{
+			s := &ServiceMock{
 				window:          tt.fields.window,
 				symbols:         tt.fields.symbols,
 				prices:          tt.fields.prices,
@@ -256,7 +256,7 @@ func Test_service_getAverage(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := &serviceMock{
+			s := &ServiceMock{
 				window:          tt.fields.window,
 				symbols:         tt.fields.symbols,
 				prices:          tt.fields.prices,

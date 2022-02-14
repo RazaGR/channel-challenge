@@ -27,17 +27,17 @@ func TestNewFinnHubRepository(t *testing.T) {
 			name: "FinnhubRepository",
 			args: args{
 				symbols: map[string]float32{
-					"AAPL": 0.01,
-					"MSFT": 0.01,
-					"GOOG": 0.01,
+					"USD": 0.01,
+					"EUR": 0.01,
+					"GBP": 0.01,
 				},
 				APIKey: "",
 			},
 			want: &repo{
 				symbols: map[string]float32{
-					"AAPL": 0.01,
-					"MSFT": 0.01,
-					"GOOG": 0.01,
+					"USD": 0.01,
+					"EUR": 0.01,
+					"GBP": 0.01,
 				},
 				APIKey: "",
 			},
@@ -90,17 +90,17 @@ func Test_repo_Run(t *testing.T) {
 			name: "Run",
 			fields: fields{
 				symbols: map[string]float32{
-					"AAPL": 0.01,
-					"MSFT": 0.01,
-					"GOOG": 0.01,
+					"USD": 0.01,
+					"EUR": 0.01,
+					"GBP": 0.01,
 				},
 				APIKey: "",
 			},
 			args: args{
 				channels: map[string]chan domain.Currency{
-					"AAPL": make(chan domain.Currency),
-					"MSFT": make(chan domain.Currency),
-					"GOOG": make(chan domain.Currency),
+					"USD": make(chan domain.Currency),
+					"EUR": make(chan domain.Currency),
+					"GBP": make(chan domain.Currency),
 				},
 			},
 			want: nil,
@@ -139,9 +139,9 @@ func Test_repo_subscribe(t *testing.T) {
 			name: "subscribe",
 			fields: fields{
 				symbols: map[string]float32{
-					"AAPL": 0.01,
-					"MSFT": 0.01,
-					"GOOG": 0.01,
+					"USD": 0.01,
+					"EUR": 0.01,
+					"GBP": 0.01,
 				},
 				APIKey: "",
 			},
@@ -186,18 +186,18 @@ func Test_repo_startListening(t *testing.T) {
 			name: "startListening",
 			fields: fields{
 				symbols: map[string]float32{
-					"AAPL": 0.01,
-					"MSFT": 0.01,
-					"GOOG": 0.01,
+					"USD": 0.01,
+					"EUR": 0.01,
+					"GBP": 0.01,
 				},
 				APIKey: "",
 			},
 			args: args{
 				w: &websocket.Conn{},
 				channels: map[string]chan domain.Currency{
-					"AAPL": make(chan domain.Currency),
-					"MSFT": make(chan domain.Currency),
-					"GOOG": make(chan domain.Currency),
+					"USD": make(chan domain.Currency),
+					"EUR": make(chan domain.Currency),
+					"GBP": make(chan domain.Currency),
 				},
 			},
 			want: nil,
@@ -239,15 +239,15 @@ func Test_repo_duplicate(t *testing.T) {
 			name: "duplicate",
 			fields: fields{
 				symbols: map[string]float32{
-					"AAPL": 0.01,
-					"MSFT": 0.01,
-					"GOOG": 0.01,
+					"USD": 0.01,
+					"EUR": 0.01,
+					"GBP": 0.01,
 				},
 				APIKey: "",
 			},
 			args: args{
-				val:   "AAPL",
-				array: []string{"AAPL", "MSFT", "GOOG"},
+				val:   "USD",
+				array: []string{"USD", "EUR", "GBP"},
 			},
 			wantOk: true,
 			wantI:  0,

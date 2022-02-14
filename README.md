@@ -71,12 +71,11 @@ if you need to run this without docker, you have to add all your global variable
 - [x] Multiple currencies support
 - [x] Add Database logic
 - [x] Split from Flat to [hexagonal architecture software](https://en.wikipedia.org/wiki/Hexagonal_architecture_%28software%29) design
-- [x] Dockerize
 - [x] Error Handling - just some basic stuff
 - [x] Refactoring & Optimizing
 - [x] Write Tests - just some basic stuff, could add more if required.
 - [ ] Testing
-- [ ] Complete
+- [x] Dockerize
 
 ## Known Issues
 
