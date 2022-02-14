@@ -1,7 +1,5 @@
 # Fun with Channels - Challenge Solution
 
-## !!!!! This work is still in progress !!!!!
-
 This demo follows Domain driven design approach by laverging [Hexagonal Architecture Software](https://en.wikipedia.org/wiki/Hexagonal_architecture_%28software%29) design pattern, which makes it super easy to switch to any kind of provider or database.
 
 ## How to run it
@@ -39,6 +37,23 @@ This will currently store a database.csv file in root diretory, but I can add ea
 if you need to run this without docker, you have to add all your global variables in
 `.env` file in project root directory
 
+### Output
+
+When you run it should outputlike this
+
+```
+1 ->  BINANCE:BTCUSDT ->  41768.17
+2 ->  BINANCE:BTCUSDT ->  41768.17
+3 ->  BINANCE:BTCUSDT ->  41769.3
+4 ->  BINANCE:BTCUSDT ->  41769.3
+0 ->  BINANCE:BTCUSDT ->  41759.03
+-> Currency: BINANCE:BTCUSDT: window: 30:  Timestamp: 1644806686545: Average: 41760.67466666667
+```
+
+the first lines echo value received on channel every second from socket, last line is the average value after 30 window.
+Note: Some times first line is being echo before or after the average output, because it is running in other
+goroutine.
+
 ## Project Structure
 
 ```
@@ -74,10 +89,10 @@ if you need to run this without docker, you have to add all your global variable
 - [x] Error Handling - just some basic stuff
 - [x] Refactoring & Optimizing
 - [x] Write Tests - just some basic stuff, could add more if required.
-- [ ] Testing
+- [x] Testing
 - [x] Dockerize
 
 ## Known Issues
 
-- [ ] In JSON response of Finnhub there are duplicate entries of same currency symbol, Only difference in the map is Volume value, I am just grabbing one
+- [ ] In JSON response of Finnhub there are duplicate entries of same currency symbol, Only difference in the map is Volume value
 - [ ] When running multiple currencies, sometimes websocket is sending multiple streams in less then a second, which is causing window size to fill quickly, if we need to, I can change this to time instead of data value.
