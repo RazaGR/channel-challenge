@@ -88,7 +88,7 @@ goroutine.
 - [x] Split from Flat to [hexagonal architecture software](https://en.wikipedia.org/wiki/Hexagonal_architecture_%28software%29) design
 - [x] Error Handling - just some basic stuff
 - [x] Refactoring & Optimizing
-- [x] Write Tests - just some basic stuff, could add more if required.
+- [x] Write Tests - just some basic stuff, incomplete/incorrect, could add if required.
 - [x] Testing
 - [x] Dockerize
 
