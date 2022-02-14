@@ -1,5 +1,4 @@
-// FileStorageRepository implements CurrencyRepository interface
-// It is used to save currency data to a file
+// TODO: These are incomplete/incorrect tests, will come back to them later
 package repository
 
 import (

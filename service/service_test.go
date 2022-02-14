@@ -1,5 +1,4 @@
-// CurrencyService is used to get the currency data from adapters (PriceProviderRepository)
-// and save it to the database (CurrencyRepository)
+// TODO: These are incomplete/incorrect tests, will come back to them later
 package service
 
 import (

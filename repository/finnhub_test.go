@@ -1,5 +1,4 @@
-//Finnhub adapatar implements PriceProviderRepository interface
-// it is a source adapter for the Finnhub Websocket API
+// TODO: These are incomplete/incorrect tests, will come back to them later
 package repository
 
 import (
@@ -72,6 +71,7 @@ func (m *repoMock) startListening(w *websocket.Conn, channels map[string]chan do
 	args := m.Called()
 	return args.Get(0).(error)
 }
+
 func Test_repo_Run(t *testing.T) {
 	type fields struct {
 		symbols map[string]float32
